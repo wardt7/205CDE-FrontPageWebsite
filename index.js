@@ -21,39 +21,91 @@ const JSONString = toSend => new Promise( (resolve, reject) => {
 	resolve(string)
 })
 
-const getBlogs = () => new Promise( (resolve, reject) => {
-	let db = new sqlite3.Database('./db/websiteData.db', (err) => {
+const openDB = () => new Promise( (resolve, reject) => {
+	const db = new sqlite3.Database('./db/websiteData.db', (err) => {
 		if (err){
-			reject(err)
-		} else {
-			console.log('Connected to websiteData.db')
+			console.log(err.message)
+			reject(new Error(err.message))
 		}
-	})
-	const sql = 'SELECT title, username, content FROM Blogs ORDER BY timestamp DESC'
-	let sqlData = []
-	db.all(sql, [], (err, rows) => {
-		if (err){
-			reject(err)
-		} else {
-			rows.forEach((row) => {
-				toReturn.push(row)
+		db.serialize( () => {
+			db.run('CREATE TABLE IF NOT EXISTS users(username TEXT PRIMARY KEY, password TEXT NOT NULL)'), (err) => {
+				if (err){
+					console.log(err.message)
+					reject(new Error(err.message))
+				}
+			}
+			db.run(`CREATE TABLE IF NOT EXISTS posts(postID INTEGER PRIMARY KEY AUTOINCREMENT, 
+							timestamp INTEGER NOT NULL, title TEXT NOT NULL, username TEXT NOT NULL,
+							content TEXT NOT NULL,
+							FOREIGN KEY(username) REFERENCES users(username))`, (err) => {
+				if (err){
+					console.log(err.message)
+					reject(new Error(err.message))
+				} else {
+					resolve(db)
+				}
 			})
-		}
+		})
 	})
-	db.close((err) => {
-		if (err){
-			reject(err)
-		} else {
-			console.log('Disconnected from websiteData.db')
-		}
-	})
-	const toReturn = {data: sqlData}
-	resolve(toReturn)
 })
 
-async function sendData(data, callback) {
+const closeDB = db => new Promise( (resolve, reject) => {
+	db.close((err) => {
+		if (err){
+			console.log(err.message)
+			reject(new Error(err.message))
+		} else resolve()
+	})
+})
+
+const getPosts = db => new Promise( (resolve, reject) => {
+	const sql = 'SELECT * FROM posts ORDER BY timestamp DESC'
+	db.all(sql, [], (err, rows) => {
+		if (err){
+			console.log(err.message)
+			reject(new Error(err.message))
+		} else {
+			const sqlData = []
+			rows.forEach((row) => {
+				sqlData.push(row)
+			})
+			resolve({data: sqlData})
+		}
+	})
+})
+
+const newUser = (db, username, password) => new Promise( (resolve, reject) => {
+	db.run('INSERT INTO users VALUES (?,?)', [username, password], (err) => {
+		if(err){
+			console.log(err.message)
+			reject(err)
+		} else resolve('inserted alice')
+	})
+})
+
+const newPost = (db, title, username, content) => new Promise( (resolve, reject) => {
+	const timestamp = Date.now((err) => {
+		if(err){
+			console.log(err.message)
+			reject(err)
+		}
+	})
+	db.run('INSERT INTO posts(timestamp, title, username, content) VALUES (?,?,?,?)', [timestamp, title, username, content], (err) => {
+		if(err){
+			console.log(err.message)
+			reject(err)
+		} else resolve('inserted post')
+	})
+})
+
+
+async function sendPosts(callback) {
 	try {
-		await getBlogs()
+		const connection = await openDB()
+		await newUser(connection, 'Alice', 'Password')
+		await newPost(connection,'A Title','Alice','Some content')
+		const data = await getPosts(connection)
+		await closeDB(connection)
 		const toReturn = await JSONString(data)
 		callback(null, toReturn)
 	} catch (err) {
@@ -84,14 +136,8 @@ app.post('/params', (req, res) => {
 })
 
 app.get('/database/posts', (req, res) => {
-	const items = {data: [{title: 'Hello World',
-								 				username: 'Alice',
-								 				content: 'Lorem ipsum dolor sit amet'},
-	{title: 'Goodbye World',
-          							username: 'Bob',
-          							content: 'Some other sad stuff'}]}
 	res.setHeader('content-type','application/json')
-	sendData(items, (err, data) => {
+	sendPosts((err, data) => {
 		res.setHeader('content-type','application/json')
 		if (err) {
 			res.send(err.message)
