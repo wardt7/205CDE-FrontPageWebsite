@@ -10,7 +10,7 @@ li {
     float: left;
 }
 
-li a, .dropbutton, .dropcontent form input[type=submit] {
+li a, .dropbutton, .dropcontent form input[type=submit], .dropcontent a{
     display: block;
     color: white;
     text-align: center;
@@ -18,7 +18,11 @@ li a, .dropbutton, .dropcontent form input[type=submit] {
     text-decoration: none;
 }
 
-li a:hover, .dropmenu:hover .dropbutton, .dropcontent form input[type=submit] {
+.dropcontent form input[type=submit], .dropcontent a{
+  background-color: #333
+}
+
+li a:hover, .dropmenu:hover .dropbutton, .dropcontent form input[type=submit]:hover, .dropcontent a:hover {
   background-color: #111
 }
 
@@ -29,10 +33,12 @@ li.dropmenu {
 .dropcontent {
     display: none;
     position: absolute;
+    right: 0;
     background-color: #f9f9f9;
-    min-width: 260px;
+    min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    overflow: hidden;
 }
 
 .dropcontent form {
@@ -46,9 +52,6 @@ li.dropmenu {
 .dropcontent form input{
   width: 100%
 }
-
-
-.dropcontent a:hover {background-color: #f1f1f1}
 
 .dropmenu:hover .dropcontent {
     display: block;

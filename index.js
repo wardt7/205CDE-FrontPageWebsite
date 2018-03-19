@@ -102,8 +102,6 @@ const newPost = (db, title, username, content) => new Promise( (resolve, reject)
 async function sendPosts(callback) {
 	try {
 		const connection = await openDB()
-		await newUser(connection, 'Alice', 'Password')
-		await newPost(connection,'A Title','Alice','Some content')
 		const data = await getPosts(connection)
 		await closeDB(connection)
 		const toReturn = await JSONString(data)
@@ -138,10 +136,11 @@ app.post('/params', (req, res) => {
 app.get('/database/posts', (req, res) => {
 	res.setHeader('content-type','application/json')
 	sendPosts((err, data) => {
-		res.setHeader('content-type','application/json')
 		if (err) {
+			res.status(400)
 			res.send(err.message)
 		} else {
+			res.status(200)
 			res.send(data)
 		}
 	})
