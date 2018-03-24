@@ -7,16 +7,24 @@
 		<title>FrontPage - Sign Up</title>
 		<meta name="description" content="The HTML5 Template">
 		<meta name="author" content="Joe Bloggs">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
 	<body>
+		<h1>
+			FrontPage
+		</h1>
+		<ul id="navbar">
+			<li><a href=index.html>Home</a></li>
+		</ul>
     <form method="post" action="/params">
-			First name:<br>
+			Username:<br>
 			<input type="text" name="username">
 			<br>
-			Last name:<br>
-			<input type="password" name="lastname">
+			Password:<br>
+			<input type="password" name="password">
 			<br><br>
-			<input type="submit" value="Submit">
-		</form> 
+			<input type="button" value="Submit">
+		</form>
 	</body>
+	<script src="javascript/addnavbar.js"></script>
 </html>

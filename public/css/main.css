@@ -1,3 +1,18 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1em;
+}
+
+h1 {
+  font-family: 'Source Sans Pro 700', sans-serif;
+  font-size: 4.5em;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -10,20 +25,38 @@ li {
     float: left;
 }
 
-li a, .dropbutton, .dropcontent form input[type=submit], .dropcontent a{
+form {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+form input{
+  width: 100%;
+  max-width: 200px;
+}
+
+li a, .dropbutton, .dropcontent a{
     display: block;
     color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    -webkit-transition-duration: 0.4s; /* Safari Support */
+    transition-duration: 0.4s;
 }
 
-.dropcontent form input[type=submit], .dropcontent a{
-  background-color: #333
+.dropcontent a{
+  background-color: #333;
 }
 
-li a:hover, .dropmenu:hover .dropbutton, .dropcontent form input[type=submit]:hover, .dropcontent a:hover {
-  background-color: #111
+li a:hover, .dropmenu:hover .dropbutton, .dropcontent a:hover {
+  background-color: #111;
+
 }
 
 li.dropmenu {
@@ -33,24 +66,14 @@ li.dropmenu {
 .dropcontent {
     display: none;
     position: absolute;
+    left: auto;
     right: 0;
+    margin-right: 8px;
     background-color: #f9f9f9;
-    min-width: 160px;
+    min-width: 200px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     overflow: hidden;
-}
-
-.dropcontent form {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: center;
-}
-
-.dropcontent form input{
-  width: 100%
 }
 
 .dropmenu:hover .dropcontent {

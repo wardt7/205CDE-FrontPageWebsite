@@ -15,6 +15,12 @@ app.set('view engine', 'html')
 
 const port = 8080
 
+const status = {
+	OK: 200,
+	NOT_AUTHORISED: 401,
+	NOT_FOUND: 404
+}
+
 const JSONString = toSend => new Promise( (resolve, reject) => {
 	const string = JSON.stringify(toSend)
 	if (string === undefined) reject(new Error('Couldn\'t stringify object'))
@@ -98,6 +104,19 @@ const newPost = (db, title, username, content) => new Promise( (resolve, reject)
 	})
 })
 
+const findUser = (db, username, password) => new Promise( (resolve, reject) => {
+	db.get('SELECT * FROM USERS WHERE username = ? AND password = ?', [username,password], (err, row) => {
+		if(err){
+			console.log(err.message)
+			reject(err)
+		} else{
+			if (row === undefined){
+				reject('User/Password combination not found')
+			} else resolve('Authorized')
+		}
+	})
+})
+
 
 async function sendPosts(callback) {
 	try {
@@ -111,8 +130,32 @@ async function sendPosts(callback) {
 	}
 }
 
+async function authorize(callback){
+	try{
+		const connection = await openDB()
+		const authorize = await findUser()
+		await closeDB(connection)
+		callback(null, authorize)
+	} catch (err) {
+		callback(err)
+	}
+}
+
 app.get('/', (req, res) => {
 	res.sendFile(`${__dirname}/html/index.html`)
+})
+
+app.get('/checkauth', (req, res) => {
+	if(!req.headers.authorization) res.status(status.NOT_AUTHORISED).end()
+	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORISED).end()
+	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
+	const decoded = Buffer.from(token, 'base64').toString()
+	const [username, password] = decoded.split(':')
+	authorize((err, data) => {
+		if (err){
+			res.status(status.NOT_AUTHORISED).end()
+		} else res.status(status.OK).end()
+	})
 })
 
 app.get('/account', (req, res) => {
@@ -137,10 +180,10 @@ app.get('/database/posts', (req, res) => {
 	res.setHeader('content-type','application/json')
 	sendPosts((err, data) => {
 		if (err) {
-			res.status(400)
+			res.status(status.NOT_FOUND)
 			res.send(err.message)
 		} else {
-			res.status(200)
+			res.status(status.OK)
 			res.send(data)
 		}
 	})
