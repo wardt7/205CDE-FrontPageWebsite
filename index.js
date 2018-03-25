@@ -85,7 +85,7 @@ const newUser = (db, username, password) => new Promise( (resolve, reject) => {
 		if(err){
 			console.log(err.message)
 			reject(err)
-		} else resolve('inserted alice')
+		} else resolve('Inserted')
 	})
 })
 
@@ -130,12 +130,23 @@ async function sendPosts(callback) {
 	}
 }
 
-async function authorize(callback){
+async function authorize(username, password, callback){
 	try{
 		const connection = await openDB()
-		const authorize = await findUser()
+		const authorize = await findUser(connection, username, password)
 		await closeDB(connection)
 		callback(null, authorize)
+	} catch (err) {
+		callback(err)
+	}
+}
+
+async function addUser(username, password, callback){
+	try{
+		const connection = await openDB()
+		await newUser(connection, username, password)
+		await closeDB(connection)
+		callback(null)
 	} catch (err) {
 		callback(err)
 	}
@@ -146,35 +157,43 @@ app.get('/', (req, res) => {
 })
 
 app.get('/checkauth', (req, res) => {
+	if(!req.headers.authorization){
+		console.log("no header")
+		res.status(status.NOT_AUTHORISED).end()
+	} 
+	if(req.headers.authorization.indexOf('Basic ') !== 0){
+		console.log("no basic")
+		res.status(status.NOT_AUTHORISED).end()
+	} 
+	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
+	const decoded = Buffer.from(token, 'base64').toString()
+	const [username, password] = decoded.split(':')
+	authorize(username, password, (err, data) => {
+		if (err){
+			console.log(err)
+			res.status(status.NOT_AUTHORISED).end()
+		} else res.status(status.OK).end()
+	})
+})
+
+app.get('/adduser', (req, res) => {
 	if(!req.headers.authorization) res.status(status.NOT_AUTHORISED).end()
 	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORISED).end()
 	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
 	const decoded = Buffer.from(token, 'base64').toString()
 	const [username, password] = decoded.split(':')
-	authorize((err, data) => {
+	addUser(username, password, (err) => {
 		if (err){
 			res.status(status.NOT_AUTHORISED).end()
 		} else res.status(status.OK).end()
 	})
 })
 
-app.get('/account', (req, res) => {
+app.get('/create', (req, res) => {
 	res.sendFile(`${__dirname}/html/signup.html`)
 })
 
-app.post('/params', (req, res) => {
-	const data = req.body
-	res.write('<html><body><h2>Retrieving Data in Body</h2><table>')
-	for (const key in data) {
-		if (data.hasOwnProperty(key)) {
-			console.log(key)
-			console.log(data[key])
-			res.write(`<tr><td>${key}</td><td>${data[key]}</td></tr>`)
-		}
-	}
-	res.write('</table></body></html>')
-	res.end()
-})
+
 
 app.get('/database/posts', (req, res) => {
 	res.setHeader('content-type','application/json')
