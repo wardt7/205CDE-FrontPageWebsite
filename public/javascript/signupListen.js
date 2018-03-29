@@ -8,9 +8,9 @@ window.document.querySelector('#signup').addEventListener('click', () => {
 	const xhr = new XMLHttpRequest()
 	xhr.open('GET', '/adduser', true)
 	const user = window.document.querySelector('input[name="signupUsername"]').value
-
 	const pass = window.document.querySelector('input[name="signupPassword"]').value
-	const token = btoa(`${user}:${pass}`)
+	const validate = window.document.querySelector('input[name="signupPasswordValidate"]').value
+	const token = btoa(`${user}:${pass}:${validate}`)
 	console.log(`token: ${token}`)
 	xhr.setRequestHeader('Content-type', 'application/json')
 	xhr.setRequestHeader('Authorization', `Basic ${token}`)
@@ -34,3 +34,15 @@ window.document.querySelector('#signup').addEventListener('click', () => {
 		}
 	}
 })
+
+
+const checkPass = () => {
+	console.log('typing password')
+	const pass = window.document.querySelector('input[name="signupPassword"]').value
+	const validate = window.document.querySelector('input[name="signupPasswordValidate"]').value
+	if(pass === validate){
+		window.document.getElementById('validator').style.backgroundColor = 'green'
+	} else {
+		window.document.getElementById('validator').style.backgroundColor = 'red'
+	}
+}

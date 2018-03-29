@@ -28,11 +28,11 @@ function getPosts(){
 				for (const item of response['data']){
 					console.log(item)
 					const blog = window.document.createElement('article')
-					const title = window.document.createElement('h1')
+					const title = window.document.createElement('h2')
 					const titleNode = window.document.createTextNode(`${item.title}`)
 					title.appendChild(titleNode)
 					const user = window.document.createElement('h4')
-					const userNode = window.document.createTextNode(`${item.username}`)
+					const userNode = window.document.createTextNode(`Author: ${item.username}`)
 					user.appendChild(userNode)
 					const content = window.document.createElement('p')
 					const contentNode = window.document.createTextNode(`${item.content}`)

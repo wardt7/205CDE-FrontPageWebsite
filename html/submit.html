@@ -1,4 +1,3 @@
-
 <!doctype html>
 
 <html lang="en">
@@ -16,19 +15,19 @@
 		<ul id="navbar">
 			<li><a href=index.html>Home</a></li>
 		</ul>
+		<h1>
+			Make a Post
+		</h1>
     <form method="post" action="/params">
-			Username:<br>
-			<input type="text" name="signupUsername">
+			Title:<br>
+			<input type="text" name="title">
 			<br>
-			Password:<br>
-			<input type="password" name="signupPassword">
+			Content:<br>
+			<input type="text" name="content">
 			<br><br>
-			Enter Password Again:<br>
-			<input type="password" name="signupPasswordValidate" id="validator", onkeyup='checkPass(); return false;'>
-			<br><br>
-			<input type="button" value="Submit" id="signup">
+			<input type="button" value="Submit" id="post">
 		</form>
 	</body>
 	<script src="javascript/addnavbar.js"></script>
-	<script src="javascript/signupListen.js"></script>
+	<script src="javascript/submitPostListen.js"></script>
 </html>
