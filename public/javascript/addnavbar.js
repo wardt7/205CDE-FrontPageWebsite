@@ -1,4 +1,6 @@
+
 'use strict'
+
 
 function getNav(){
 	const UNAUTHORIZED = 401
@@ -25,64 +27,69 @@ function getNav(){
 			} else {
 				loggedin = true
 			}
-			const navbar = window.document.getElementById('navbar')
-			const dropMenu = window.document.createElement('li')
+			const navbar = document.getElementById('navbar')
+			const dropMenu = document.createElement('li')
 			dropMenu.classList.add('dropmenu')
 			dropMenu.setAttribute('style', 'float:right')
-			const dropButton = window.document.createElement('a')
+			const dropButton = document.createElement('a')
 			dropButton.setAttribute('href','javascript:void(0)')
 			dropButton.classList.add('dropbutton')
-			const dropContent = window.document.createElement('div')
+			const dropContent = document.createElement('div')
 			dropContent.classList.add('dropcontent')
 			dropContent.setAttribute('style', 'right:0')
 			console.log(loggedin)
 			if (!loggedin){
-				const dropButtonText = window.document.createTextNode('Login')
+				const dropButtonText = document.createTextNode('Login')
 				dropButton.appendChild(dropButtonText)
 				dropMenu.appendChild(dropButton)
-				const loginForm = window.document.createElement('form')
+				const loginForm = document.createElement('form')
 				loginForm.setAttribute('method', 'post')
 				loginForm.setAttribute('action','/params')
-				const usernameText = window.document.createElement('label')
+				const usernameText = document.createElement('label')
 				usernameText.innerHTML = 'Username:'
 				loginForm.appendChild(usernameText)
-				const usernameLineBreak = window.document.createElement('br')
+				const usernameLineBreak = document.createElement('br')
 				loginForm.appendChild(usernameLineBreak)
-				const usernameInput = window.document.createElement('input')
+				const usernameInput = document.createElement('input')
 				usernameInput.setAttribute('type','text')
 				usernameInput.setAttribute('name','username')
 				loginForm.appendChild(usernameInput)
-				const usernameInputLineBreak = window.document.createElement('br')
+				const usernameInputLineBreak = document.createElement('br')
 				loginForm.appendChild(usernameInputLineBreak)
-				const passwordText = window.document.createElement('label')
+				const passwordText = document.createElement('label')
 				passwordText.innerHTML = 'Password:'
 				loginForm.appendChild(passwordText)
-				const passwordLineBreak = window.document.createElement('br')
+				const passwordLineBreak = document.createElement('br')
 				loginForm.appendChild(passwordLineBreak)
-				const passwordInput = window.document.createElement('input')
+				const passwordInput = document.createElement('input')
 				passwordInput.setAttribute('type','password')
 				passwordInput.setAttribute('name','password')
 				loginForm.appendChild(passwordInput)
-				const passwordInputLineBreak = window.document.createElement('br')
+				const passwordInputLineBreak = document.createElement('br')
 				loginForm.appendChild(passwordInputLineBreak)
-				const submitLineBreak = window.document.createElement('br')
+				const submitLineBreak = document.createElement('br')
 				loginForm.appendChild(submitLineBreak)
-				const submitButton = window.document.createElement('input')
+				const submitButton = document.createElement('input')
 				submitButton.setAttribute('type','button')
 				submitButton.setAttribute('value','Submit')
 				submitButton.setAttribute('id','login')
 				loginForm.appendChild(submitButton)
+				const errMessage = document.createElement('p')
+				errMessage.setAttribute('class','error')
+				errMessage.setAttribute('id','loginError')
+				errMessage.innerHTML = ''
+				loginForm.appendChild(errMessage)
 				dropContent.appendChild(loginForm)
 				// const formLineBreak = window.document.createElement('br')
 				// dropContent.appendChild(formLineBreak)
-				const createAccount = window.document.createElement('a')
+				const createAccount = document.createElement('a')
 				createAccount.setAttribute('href','/create')
-				const createAccountText = window.document.createTextNode('Create an Account')
+				const createAccountText = document.createTextNode('Create an Account')
 				createAccount.appendChild(createAccountText)
 				dropContent.appendChild(createAccount)
 				dropMenu.appendChild(dropContent)
 				navbar.appendChild(dropMenu)
-				window.document.querySelector('#login').addEventListener('click', () => {
+				document.querySelector('#login').addEventListener('click', () => {
 					console.log('button clicked')
 					const xhr = new XMLHttpRequest()
 					xhr.open('GET', '/checkauth', true)
@@ -105,35 +112,38 @@ function getNav(){
 								console.log(token)
 								sessionStorage.token = token
 								sessionStorage.setItem('token', token)
-								window.location.replace('/')
+								location.replace('/')
 							} else {
 								console.log('bad credentials')
+								document.getElementById('loginError').innerHTML = 'Error: Username/Password combination not found'
 							}
 						}
 					}
 				})
 			} else {
-				const dropButtonText = window.document.createTextNode('My Account')
+				const decoded = atob(token)
+				const username = decoded.split(':')[0]
+				const dropButtonText = document.createTextNode(`${username}'s Account`)
 				dropButton.appendChild(dropButtonText)
 				dropMenu.appendChild(dropButton)
-				const logOut = window.document.createElement('a')
+				const logOut = document.createElement('a')
 				logOut.setAttribute('href','#')
 				logOut.setAttribute('id','logout')
-				const logOutText = window.document.createTextNode('Log Out')
+				const logOutText = document.createTextNode('Log Out')
 				logOut.appendChild(logOutText)
 				dropContent.appendChild(logOut)
 				dropMenu.appendChild(dropContent)
-				const submitPost = window.document.createElement('li')
-				const submitPostLink = window.document.createElement('a')
+				const submitPost = document.createElement('li')
+				const submitPostLink = document.createElement('a')
 				submitPostLink.setAttribute('href','/submit')
-				const submitPostLinkText = window.document.createTextNode('Submit')
+				const submitPostLinkText = document.createTextNode('Submit')
 				submitPostLink.appendChild(submitPostLinkText)
 				submitPost.appendChild(submitPostLink)
 				navbar.appendChild(submitPost)
 				navbar.appendChild(dropMenu)
-				window.document.querySelector('#logout').addEventListener('click', () => {
+				document.querySelector('#logout').addEventListener('click', () => {
 					sessionStorage.removeItem('token')
-					window.location.replace('/')
+					location.replace('/')
 				})
 			}
 		}

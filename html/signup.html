@@ -14,21 +14,23 @@
 			FrontPage
 		</h1>
 		<ul id="navbar">
-			<li><a href=index.html>Home</a></li>
+			<li><a href="/">Home</a></li>
 		</ul>
-    <form method="post" action="/params">
+		<form method="post" action="/params">
 			Username:<br>
 			<input type="text" name="signupUsername">
 			<br>
 			Password:<br>
-			<input type="password" name="signupPassword">
-			<br><br>
+			<input type="password" name="signupPassword" id="password" onkeyup="checkInput(); return false">
+			<br>
 			Enter Password Again:<br>
-			<input type="password" name="signupPasswordValidate" id="validator", onkeyup='checkPass(); return false;'>
+			<input type="password" name="signupPasswordValidate" id="validator" onkeyup="checkInput(); return false;">
 			<br><br>
-			<input type="button" value="Submit" id="signup">
+			<input type="button" value="Submit" id="signup" disabled>
+			<p class="error" id="signupError">
+			</p>
 		</form>
+		<script src="javascript/addnavbar.js"></script>
+		<script src="javascript/signupListen.js"></script>
 	</body>
-	<script src="javascript/addnavbar.js"></script>
-	<script src="javascript/signupListen.js"></script>
 </html>

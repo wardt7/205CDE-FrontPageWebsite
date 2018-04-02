@@ -13,21 +13,21 @@
 			FrontPage
 		</h1>
 		<ul id="navbar">
-			<li><a href=index.html>Home</a></li>
+			<li><a href="/">Home</a></li>
 		</ul>
-		<h1>
+		<h2 style="text-align: center;">
 			Make a Post
-		</h1>
-    <form method="post" action="/params">
+		</h2>
+    <form method="post" action="/params" class="blogpost">
 			Title:<br>
 			<input type="text" name="title">
 			<br>
 			Content:<br>
-			<input type="text" name="content">
+			<textarea name="content"></textarea>
 			<br><br>
 			<input type="button" value="Submit" id="post">
 		</form>
+		<script src="javascript/addnavbar.js"></script>
+		<script src="javascript/submitPostListen.js"></script>
 	</body>
-	<script src="javascript/addnavbar.js"></script>
-	<script src="javascript/submitPostListen.js"></script>
 </html>
