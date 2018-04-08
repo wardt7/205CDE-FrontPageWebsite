@@ -1,14 +1,33 @@
 
 'use strict'
 
+/**
+* A module that handles interaction with the database, as well as authorizing users, etc
+* @module databaseHandling
+*/
+
+
 const sqlite3 = require('sqlite3').verbose()
 
+
+/**
+* Convert a JSON Object to a string
+* @function JSONString
+* @param {JSON} toSend - The JSON data to be converted to a string
+* @returns {Promise<string>|Promise<Error>} string - The converted JSON data
+*/
 const JSONString = toSend => new Promise( (resolve, reject) => {
 	const string = JSON.stringify(toSend)
 	if (string === undefined) reject(new Error('Couldn\'t stringify object'))
 	resolve(string)
 })
 
+/**
+* Open a connection to the database, and if necessary creates the required tables
+* @function openDB
+* @requires sqlite3
+* @returns {Promise<object>|Promise<Error>} db - A promise containing the database connection, or an error message if unsuccessful
+*/
 const openDB = () => new Promise( (resolve, reject) => {
 	const db = new sqlite3.Database('./db/websiteData.db', (err) => {
 		if (err){
@@ -37,6 +56,13 @@ const openDB = () => new Promise( (resolve, reject) => {
 	})
 })
 
+/**
+* Closes a connection to the database
+* @function closeDB
+* @requires sqlite3
+* @param {Object} db - The database connection
+* @returns {Promise.<null>|Promise.<Error>} db - A promise containing a null, or a promise with an error if an error occurs
+*/
 const closeDB = db => new Promise( (resolve, reject) => {
 	db.close((err) => {
 		if (err){
@@ -46,6 +72,13 @@ const closeDB = db => new Promise( (resolve, reject) => {
 	})
 })
 
+/**
+* Obtains all the posts held within the database
+* @function openDB
+* @requires sqlite3
+* @param {Object} db - The database connection
+* @returns {Promise<JSON>|Promise<Error>} db - A promise containing a JSON object with data or an error if unsuccessful
+*/
 const getPosts = db => new Promise( (resolve, reject) => {
 	const sql = 'SELECT * FROM posts ORDER BY timestamp DESC'
 	db.all(sql, [], (err, rows) => {
@@ -62,15 +95,34 @@ const getPosts = db => new Promise( (resolve, reject) => {
 	})
 })
 
+/**
+* Inserts a new user into the database
+* @function newUser
+* @requires sqlite3
+* @param {Object} db - The database connection
+* @param {string} username - The username of the user to be inserted
+* @param {string} password - The password of the user to be inserted
+* @returns {Promise<null>|Promise<Error>} db - A promise containing a null if successful or an error if unsuccessful
+*/
 const newUser = (db, username, password) => new Promise( (resolve, reject) => {
 	db.run('INSERT INTO users VALUES (?,?)', [username, password], (err) => {
 		if(err){
 			console.log(err.message)
 			reject(err)
-		} else resolve('Inserted')
+		} else resolve()
 	})
 })
 
+/**
+* Inserts a new post into the database
+* @function newPost
+* @requires sqlite3
+* @param {Object} db - The database connection
+* @param {string} title - The title of the blog post
+* @param {string} username - The username of the post author
+* @param {string} content - The content of the blog post
+* @returns {Promise<null>|Promise<Error>} db - A promise containing a null if successful or an error if unsuccessful
+*/
 const newPost = (db, title, username, content) => new Promise( (resolve, reject) => {
 	const timestamp = Date.now((err) => {
 		if(err){
@@ -82,10 +134,19 @@ const newPost = (db, title, username, content) => new Promise( (resolve, reject)
 		if(err){
 			console.log(err.message)
 			reject(err)
-		} else resolve('inserted post')
+		} else resolve()
 	})
 })
 
+/**
+* Attempts to find a user in the database
+* @function findUser
+* @requires sqlite3
+* @param {Object} db - The database connection
+* @param {string} username - The username of the user to be found
+* @param {string} password - The password of the user to be found
+* @returns {Promise<null>|Promise<Error>|Promise<string>} db - A promise containing a null if successful; an error object if an error occurs; or a rejected string if the user wasn't found
+*/
 const findUser = (db, username, password) => new Promise( (resolve, reject) => {
 	db.get('SELECT * FROM USERS WHERE username = ? AND password = ?', [username,password], (err, row) => {
 		if(err){
@@ -99,7 +160,14 @@ const findUser = (db, username, password) => new Promise( (resolve, reject) => {
 	})
 })
 
-
+/**
+* Opens a database and returns the data found in a callback
+* @async
+* @function sendPosts
+* @requires sqlite3
+* @param {Function} callback
+* @returns {JSON<Array>|Error} - Returns the JSON object obtained or an error
+*/
 async function sendPosts(callback) {
 	try {
 		const connection = await openDB()
@@ -112,6 +180,16 @@ async function sendPosts(callback) {
 	}
 }
 
+/**
+* Opens a database and finds a user to authorize them
+* @async
+* @function sendPosts
+* @requires sqlite3
+* @param {string} username - The username of the user to authorize
+* @param {string} password - The password of the user to authorize
+* @param {Function} callback
+* @returns {null|Error} - Returns the JSON object obtained or an error
+*/
 async function authorize(username, password, callback){
 	try{
 		const connection = await openDB()
@@ -123,6 +201,16 @@ async function authorize(username, password, callback){
 	}
 }
 
+/**
+* Opens a database and inserts a new user
+* @async
+* @function sendPosts
+* @requires sqlite3
+* @param {string} username - The username of the user to authorize
+* @param {string} password - The password of the user to authorize
+* @param {Function} callback
+* @returns {null|Error} - Returns the JSON object obtained or an error
+*/
 async function addUser(username, password, callback){
 	try{
 		const connection = await openDB()
@@ -134,6 +222,17 @@ async function addUser(username, password, callback){
 	}
 }
 
+/**
+* Opens a database and returns the data found in a callback
+* @async
+* @function sendPosts
+* @requires sqlite3
+* @param {string} username - The username of the post author
+* @param {string} title - The title of the post
+* @param {string} content - The content of the post
+* @param {Function} callback
+* @returns {null|Error} - Returns the JSON object obtained or an error
+*/
 async function addPost(username, title, content, callback){
 	try{
 		const connection = await openDB()

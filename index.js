@@ -18,10 +18,11 @@ const port = 8080
 
 const status = {
 	OK: 200,
-	NOT_AUTHORISED: 401,
+	NOT_AUTHORIZED: 401,
 	NOT_FOUND: 404,
 	INTERNAL_ERROR: 500
 }
+
 
 app.get('/', (req, res) => {
 	res.sendFile(`${__dirname}/html/index.html`)
@@ -30,11 +31,11 @@ app.get('/', (req, res) => {
 app.get('/checkauth', (req, res) => {
 	if(!req.headers.authorization){
 		console.log('no header')
-		res.status(status.NOT_AUTHORISED).end()
+		res.status(status.NOT_AUTHORIZED).end()
 	}
 	if(req.headers.authorization.indexOf('Basic ') !== 0){
 		console.log('no basic')
-		res.status(status.NOT_AUTHORISED).end()
+		res.status(status.NOT_AUTHORIZED).end()
 	}
 	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
 	const decoded = Buffer.from(token, 'base64').toString()
@@ -42,14 +43,14 @@ app.get('/checkauth', (req, res) => {
 	databaseHandling.authorize(username, password, (err) => {
 		if (err){
 			console.log(err)
-			res.status(status.NOT_AUTHORISED).end()
+			res.status(status.NOT_AUTHORIZED).end()
 		} else res.status(status.OK).end()
 	})
 })
 
 app.get('/adduser', (req, res) => {
-	if(!req.headers.authorization) res.status(status.NOT_AUTHORISED).end()
-	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORISED).end()
+	if(!req.headers.authorization) res.status(status.NOT_AUTHORIZED).end()
+	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORIZED).end()
 	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
 	const decoded = Buffer.from(token, 'base64').toString()
 	const [username, password, validate] = decoded.split(':')
@@ -57,33 +58,38 @@ app.get('/adduser', (req, res) => {
 		console.log('validator and password don\'t matchy matchy')
 		console.log(password)
 		console.log(validate)
-		res.status(status.NOT_AUTHORISED).end()
+		res.status(status.INTERNAL_ERROR).end()
 	}
 	databaseHandling.addUser(username, password, (err) => {
 		if (err){
-			res.status(status.NOT_AUTHORISED).end()
+			res.status(status.INTERNAL_ERROR).end()
 		} else res.status(status.OK).end()
 	})
 })
 
 app.post('/addpost', (req, res) => {
-	if(!req.headers.authorization) res.status(status.NOT_AUTHORISED).end()
-	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORISED).end()
+	if(!req.headers.authorization) res.status(status.NOT_AUTHORIZED).end()
+	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORIZED).end()
 	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
 	const decoded = Buffer.from(token, 'base64').toString()
 	const [username, password] = decoded.split(':')
 	databaseHandling.authorize(username, password, (err) => {
 		if (err){
 			console.log(err)
-			res.status(status.NOT_AUTHORISED).end()
+			res.status(status.NOT_AUTHORIZED).end()
 		} else {
 			console.log('authorized')
-			databaseHandling.addPost(username, req.body.title, req.body.content, (err) => {
-				if (err){
-					console.log(err)
-					res.status(status.NOT_AUTHORISED).end()
-				} else res.status(status.OK).end()
-			})
+			if (/\S/.test(req.body.title) && /\S/.test(req.body.content)) {
+    	// string is not empty and not just whitespace
+				databaseHandling.addPost(username, req.body.title, req.body.content, (err) => {
+					if (err){
+						console.log(err)
+						res.status(status.INTERNAL_ERROR).end()
+					} else res.status(status.OK).end()
+				})
+			} else {
+				res.status(status.INTERNAL_ERROR).end()
+			}
 		}
 	})
 })
@@ -107,6 +113,18 @@ app.get('/database/posts', (req, res) => {
 			res.send(data)
 		}
 	})
+})
+
+app.get('/documentation', (req, res) => {
+	res.sendFile(`${__dirname}/out/index.html`)
+})
+
+app.get('/documentation/databaseHandling', (req, res) => {
+	res.sendFile(`${__dirname}/out/module-databaseHandling.html`)
+})
+
+app.get('/documentation/databaseHandling.js.html', (req, res) => {
+	res.sendFile(`${__dirname}/out/databaseHandling.js.html`)
 })
 
 app.get('*', (req, res) => {

@@ -1,7 +1,12 @@
 'use strict'
 
 const READY = 4
-const OK = 200
+const responseStatus = {
+	OK: 200,
+	NOT_AUTHORIZED: 401,
+	INTERNAL_ERROR: 500
+}
+
 
 document.querySelector('#post').addEventListener('click', () => {
 	console.log('button clicked')
@@ -24,13 +29,17 @@ document.querySelector('#post').addEventListener('click', () => {
 	xhr.onreadystatechange = () => {
 		if (xhr.readyState === READY) {
 			console.log(`status: ${xhr.status}`)
-			if (xhr.status === OK) {
+			if (xhr.status === responseStatus.OK) {
 				console.log('Submit OK')
 				//const data = JSON.parse(xhr.responseText)
 				//console.log(data)
 				window.location.replace('/')
+			} else if (xhr.status === responseStatus.NOT_AUTHORIZED){
+				console.log('Not logged in')
+				document.getElementById('submitError').innerHTML = 'You must be logged in to submit posts'
 			} else {
-				console.log('Submit Bad')
+				console.log('Internal Error')
+				document.getElementById('submitError').innerHTML = 'Internal Error (Did your title or content contain only whitespace?)'
 			}
 		}
 	}

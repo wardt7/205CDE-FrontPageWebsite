@@ -8,6 +8,8 @@
 		<meta name="author" content="Joe Bloggs">
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
+	<!-- Check for authorization before we load the page -->
+	<script src="javascript/redirector.js"></script>
 	<body>
 		<h1>
 			FrontPage
@@ -27,6 +29,7 @@
 			<br><br>
 			<input type="button" value="Submit" id="post">
 		</form>
+		<p class="error" id="submitError">
 		<script src="javascript/addnavbar.js"></script>
 		<script src="javascript/submitPostListen.js"></script>
 	</body>

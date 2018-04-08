@@ -3,7 +3,6 @@
 
 
 function getNav(){
-	const UNAUTHORIZED = 401
 	const READY = 4
 	const OK = 200
 
@@ -22,9 +21,7 @@ function getNav(){
 	xhr.onreadystatechange = () => {
 		if (xhr.readyState === xhr.DONE) {
 			console.log(`status: ${xhr.status}`)
-			if (xhr.status === UNAUTHORIZED) {
-				console.log('unauthorised')
-			} else {
+			if (xhr.status === OK) {
 				loggedin = true
 			}
 			const navbar = document.getElementById('navbar')
