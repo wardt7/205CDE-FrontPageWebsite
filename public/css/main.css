@@ -1,10 +1,15 @@
 /* Google Font Importing */
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
 
-body {
+body{
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 1em;
   background-color: #f1f1f1;
+}
+
+.error{
+  color: red;
+  text-align: center;
 }
 
 h1 {
@@ -62,6 +67,8 @@ textarea{
   resize: none;
   box-sizing: -moz-border-box; /* Compatibility Support */
   box-sizing: border-box;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1em;
 }
 
 form input{
@@ -69,6 +76,13 @@ form input{
   box-sizing: border-box;
   width: 100%;
   margin: auto;
+}
+
+input[type="text"], input[type="password"], textarea{
+  /* For consistency with other inputs */
+  background-color: white;
+  border-style: solid;
+  border-color: black;
 }
 
 li a, .dropbutton, .dropcontent a{

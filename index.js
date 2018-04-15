@@ -18,6 +18,7 @@ const port = 8080
 
 const status = {
 	OK: 200,
+	NO_CONTENT: 204,
 	NOT_AUTHORIZED: 401,
 	NOT_FOUND: 404,
 	INTERNAL_ERROR: 500
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/checkauth', (req, res) => {
+	res.setHeader('Content-Type', 'application/json')
 	if(!req.headers.authorization){
 		console.log('no header')
 		res.status(status.NOT_AUTHORIZED).end()
@@ -44,11 +46,14 @@ app.get('/checkauth', (req, res) => {
 		if (err){
 			console.log(err)
 			res.status(status.NOT_AUTHORIZED).end()
-		} else res.status(status.OK).end()
+		} else {
+			res.status(status.OK).end()
+		}
 	})
 })
 
 app.get('/adduser', (req, res) => {
+	res.setHeader('Content-Type', 'application/json')
 	if(!req.headers.authorization) res.status(status.NOT_AUTHORIZED).end()
 	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORIZED).end()
 	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
@@ -60,14 +65,19 @@ app.get('/adduser', (req, res) => {
 		console.log(validate)
 		res.status(status.INTERNAL_ERROR).end()
 	}
-	databaseHandling.addUser(username, password, (err) => {
-		if (err){
-			res.status(status.INTERNAL_ERROR).end()
-		} else res.status(status.OK).end()
-	})
+	if (/\S/.test(username)) {
+		databaseHandling.addUser(username, password, (err) => {
+			if (err){
+				res.status(status.INTERNAL_ERROR).end()
+			} else {
+				res.status(status.OK).end()
+			}
+		})
+	} else res.status(status.INTERNAL_ERROR).end()
 })
 
 app.post('/addpost', (req, res) => {
+	res.setHeader('Content-Type', 'application/json')
 	if(!req.headers.authorization) res.status(status.NOT_AUTHORIZED).end()
 	if(req.headers.authorization.indexOf('Basic ') !== 0) res.status(status.NOT_AUTHORIZED).end()
 	const [,token] = req.headers.authorization.split(' ') // destructuring assignment
@@ -106,25 +116,13 @@ app.get('/database/posts', (req, res) => {
 	res.setHeader('content-type','application/json')
 	databaseHandling.sendPosts((err, data) => {
 		if (err) {
-			res.status(status.NOT_FOUND)
+			res.status(status.NO_CONTENT)
 			res.send(err.message)
 		} else {
 			res.status(status.OK)
 			res.send(data)
 		}
 	})
-})
-
-app.get('/documentation', (req, res) => {
-	res.sendFile(`${__dirname}/out/index.html`)
-})
-
-app.get('/documentation/databaseHandling', (req, res) => {
-	res.sendFile(`${__dirname}/out/module-databaseHandling.html`)
-})
-
-app.get('/documentation/databaseHandling.js.html', (req, res) => {
-	res.sendFile(`${__dirname}/out/databaseHandling.js.html`)
 })
 
 app.get('*', (req, res) => {

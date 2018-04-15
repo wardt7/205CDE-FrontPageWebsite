@@ -5,12 +5,12 @@
 	<head>
 		<meta charset="utf-8">
 		<title>FrontPage - Sign Up</title>
-		<meta name="description" content="The HTML5 Template">
-		<meta name="author" content="Joe Bloggs">
+		<meta name="description" content="The Signup Page">
+		<meta name="author" content="Toby Ward">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="robots" content="index, follow">
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
-	<!-- Redirect if the user is already logged in back to the home page -->
-	<script src="javascript/redirectorCreate.js"></script>
 	<body>
 		<h1>
 			FrontPage
@@ -18,6 +18,9 @@
 		<ul id="navbar">
 			<li><a href="/">Home</a></li>
 		</ul>
+		<h2 style="text-align: center;">
+			Create an account
+		</h2>
 		<form method="post" action="/params">
 			Username:<br>
 			<input type="text" name="signupUsername">
@@ -32,6 +35,7 @@
 			<p class="error" id="signupError">
 			</p>
 		</form>
+		<script src="javascript/redirectorCreate.js"></script>
 		<script src="javascript/addnavbar.js"></script>
 		<script src="javascript/signupListen.js"></script>
 	</body>

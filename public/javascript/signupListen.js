@@ -1,7 +1,7 @@
 'use strict'
 
 const READY = 4
-const OK = 200
+const serverOK = 200
 const MIN_LENGTH = 8
 
 document.querySelector('#signup').addEventListener('click', () => {
@@ -20,18 +20,18 @@ document.querySelector('#signup').addEventListener('click', () => {
 	xhr.onreadystatechange = () => {
 		if (xhr.readyState === READY) {
 			console.log(`status: ${xhr.status}`)
-			if (xhr.status === OK) {
+			if (xhr.status === serverOK) {
 				console.log('good credentials')
 				//const data = JSON.parse(xhr.responseText)
 				//console.log(data)
-				const token = btoa(`${user}:${pass}`)
-				console.log(token)
-				sessionStorage.token = token
-				sessionStorage.setItem('token', token)
+				const newtoken = btoa(`${user}:${pass}`)
+				console.log(newtoken)
+				sessionStorage.token = newtoken
+				sessionStorage.setItem('token', newtoken)
 				location.replace('/')
 			} else {
 				console.log('bad credentials')
-				document.getElementById('signupError').innerHTML = 'Username already exists'
+				document.getElementById('signupError').innerHTML = 'Username already exists or contains only blank characters'
 			}
 		}
 	}
@@ -44,16 +44,18 @@ const checkInput = () => {
 		document.getElementById('password').style.backgroundColor = 'LightCoral'
 		document.getElementById('signupError').innerHTML = 'Password must be longer than 7 characters'
 		document.getElementById('signup').disabled = true
+		return
 	} else if (pass !== validate){
 		document.getElementById('validator').style.backgroundColor = 'LightCoral'
 		document.getElementById('signupError').innerHTML = 'Passwords Must Match'
 		document.getElementById('signup').disabled = true
+		return
 	} else {
 		document.getElementById('validator').style.backgroundColor = 'LightGreen'
 		document.getElementById('password').style.backgroundColor = 'LightGreen'
 		document.getElementById('signupError').innerHTML = ''
-		document.getElementById('signup').disabled = false
 	}
+	document.getElementById('signup').disabled = false
 }
 
 document.querySelector('#password').addEventListener('onkeyup', checkInput)
