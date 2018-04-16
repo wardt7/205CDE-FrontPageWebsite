@@ -1,0 +1,1 @@
+This folder exists for when the database is created upon the website being served for the first time; it is empty until that point.
