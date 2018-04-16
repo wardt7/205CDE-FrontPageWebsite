@@ -1,4 +1,4 @@
-/* Google Font Importing */
+/* External Google font importing - note that the validator will flag this as a warning as it can't check imported items */
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
 
 body{
@@ -21,6 +21,7 @@ h1 {
 }
 
 article {
+  /* Articles are used for each blog post */
   background-color: white;
   padding: 20px;
   margin-top: 10px;
@@ -30,6 +31,7 @@ article {
 }
 
 ul {
+  /* Configures the navbar at the top; a list is used to load in each link */
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -65,14 +67,12 @@ textarea{
   width: 600px;
   overflow-y: auto; 
   resize: none;
-  box-sizing: -moz-border-box; /* Compatibility Support */
   box-sizing: border-box;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 1em;
 }
 
 form input{
-  box-sizing: -moz-border-box; /* Compatibility Support */
   box-sizing: border-box;
   width: 100%;
   margin: auto;
@@ -91,7 +91,6 @@ li a, .dropbutton, .dropcontent a{
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  -webkit-transition-duration: 0.4s; /* Compatibility Support */
   transition-duration: 0.4s;
 }
 
