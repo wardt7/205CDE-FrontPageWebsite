@@ -107,7 +107,9 @@ app.get('/adduser', (req, res) => {
 		res.status(status.INTERNAL_ERROR).end()
 	}
 	// Check if one of the submitted items is empty or just whitespace
-	if (/\S/.test(username) || /\S/.test(password) || /\S/.test(password)) {
+	if (/\S/.test(username) && /\S/.test(password) && /\S/.test(password)) {
+		console.log(/\S/.test(username))
+		console.log(/\S/.test(password))
 		databaseHandling.addUser(username, password, (err) => {
 			if (err){
 				res.status(status.INTERNAL_ERROR).end()
